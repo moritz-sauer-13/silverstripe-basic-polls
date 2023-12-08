@@ -6,6 +6,7 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 
 class PollSubmission extends DataObject{
+    private static $table_name = 'PollSubmission';
 
     private static $has_one = [
         'Poll' => Poll::class,

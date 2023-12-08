@@ -24,6 +24,8 @@ use Symbiote\GridFieldExtensions\GridFieldAddNewInlineButton;
 use Symbiote\GridFieldExtensions\GridFieldEditableColumns;
 
 class Poll extends DataObject{
+    private static $table_name = 'Poll';
+
     private static $db = [
         'Title' => 'Varchar',
         'StartDate' => 'Date',

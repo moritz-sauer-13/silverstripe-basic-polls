@@ -5,8 +5,7 @@ namespace Polls\DataObjects;
 use SilverStripe\ORM\DataObject;
 
 class PollOption extends DataObject {
-    private static $singular_name = 'Umfrageoption';
-    private static $plural_name = 'Umfrageoptionen';
+    private static $table_name = 'PollOption';
 
     private static $db = [
         'Title' => 'Varchar',

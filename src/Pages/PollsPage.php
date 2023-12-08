@@ -8,6 +8,7 @@ use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
 
 class PollsPage extends \Page{
+    private static $table_name = 'PollsPage';
 
     private static $has_many = [
         'Polls' => Poll::class
