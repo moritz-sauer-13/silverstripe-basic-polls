@@ -1,0 +1,27 @@
+de:
+  Polls\Pages\PollsPage:
+    SINGULARNAME: 'Umfrageseite'
+    PLURALNAME: 'Umfrageseiten'
+    DESCRIPTION: 'Eine Seite, die eine Umfrage anzeigt'
+    POLLS: 'Umfragen'
+    POLL: 'Umfrage'
+  Polls\DataObjects\Poll:
+    SINGULARNAME: 'Umfrage'
+    PLURALNAME: 'Umfragen'
+    POLLOPTIONS: 'Umfrageoptionen'
+    SUBMISSIONS: 'Einreichungen'
+    SUBMISSION: 'Einreichung'
+    SUBMITTEDBY: 'Eingereicht von'
+    CHOSENOPTION: 'Gewählte Option'
+    TITLE: 'Titel'
+    STARTDATE: 'Start Datum'
+    ENDDATE: 'End Datum'
+  Polls\DataObjects\PollSubmission:
+    SINGULARNAME: 'Umfrageeinreichung'
+    PLURALNAME: 'Umfrageeinreichungen'
+    SUBMITTED: 'Eingereicht'
+    POLL: 'Umfrage'
+    SUBMITTEDBY: 'Eingereicht von'
+    CHOSENOPTION: 'Gewählte Option'
+    SUBMISSIONS: 'Einreichungen'
+    SUBMISSION: 'Einreichung'

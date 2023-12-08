@@ -1,0 +1,15 @@
+{
+  "name":"moritz-sauer-13/silverstripe-basic-polls",
+  "description": "Silverstripe Basic Polls Module",
+  "authors": [
+    {
+      "name":"Moritz Sauer - Webentwicklung",
+      "email": "info@moritz-sauer.de"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Polls\\": "src/"
+    }
+  }
+}
