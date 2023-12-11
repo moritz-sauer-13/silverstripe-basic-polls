@@ -18,6 +18,7 @@ use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\FieldType\DBDate;
+use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\Security\Security;
 use SilverStripe\View\ArrayData;
 use Symbiote\GridFieldExtensions\GridFieldAddNewInlineButton;
@@ -64,7 +65,6 @@ class Poll extends DataObject{
             'SortOrder',
             'Options',
             'Submissions',
-            'Status',
         ]);
 
         $fields->addFieldsToTab('Root.Main', [
