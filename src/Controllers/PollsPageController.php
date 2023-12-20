@@ -55,7 +55,7 @@ class PollsPageController extends \PageController{
         $submission = PollSubmission::create();
         $submission->PollID = $data['PollID'];
         $submission->MemberID = $data['MemberID'];
-        $submission->OptionID = $data['PollOptions' . $data['PollID']][0];
+        $submission->OptionID = $data['PollOptions' . $data['PollID']];
         $submission->write();
 
         return $this->redirectBack();
