@@ -1,6 +1,6 @@
 ---
-Name: polls
+Name: pollsconfig
 ---
-SilverStripe\Security\Member:
-  extensions:
-    - Polls\Extensions\PollMemberExtension
+Polls\DataObjects\Poll:
+  MultipleChoiceAllowed: true
+  AnonymousSubmissionsInBackend: true

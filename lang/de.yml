@@ -16,6 +16,7 @@ de:
     TITLE: 'Titel'
     STARTDATE: 'Start Datum'
     ENDDATE: 'End Datum'
+    MULTIPLECHOICE: 'Mehrfachauswahl'
   Polls\DataObjects\PollSubmission:
     SINGULARNAME: 'Umfrageeinreichung'
     PLURALNAME: 'Umfrageeinreichungen'

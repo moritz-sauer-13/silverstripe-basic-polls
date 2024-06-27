@@ -1,0 +1,6 @@
+---
+Name: pollsextensions
+---
+SilverStripe\Security\Member:
+  extensions:
+    - Polls\Extensions\PollMemberExtension

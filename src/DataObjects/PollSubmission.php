@@ -14,6 +14,10 @@ class PollSubmission extends DataObject{
         'Option' => PollOption::class
     ];
 
+    private static $many_many = [
+        'Options' => PollOption::class
+    ];
+
     public function summaryFields()
     {
         return [

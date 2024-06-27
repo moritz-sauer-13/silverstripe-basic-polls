@@ -31,8 +31,12 @@ class PollsPageController extends \PageController{
         $fields = FieldList::create([
             HiddenField::create('PollID', 'PollID', $PollID),
             HiddenField::create('MemberID', 'MemberID', Security::getCurrentUser()->ID),
-            OptionsetField::create('PollOptions' . $PollID, 'PollOptions', $poll->Options()->map('ID', 'Title'))
         ]);
+        if($poll->MultipleChoice){
+            $fields->push(CheckboxSetField::create('PollOptions' . $PollID, 'PollOptions', $poll->Options()->map('ID', 'Title')));
+        } else {
+            $fields->push(OptionsetField::create('PollOptions' . $PollID, 'PollOptions', $poll->Options()->map('ID', 'Title')));
+        }
 
         $actions = FieldList::create([
             FormAction::create('submitPoll', 'Abstimmen')
@@ -52,10 +56,15 @@ class PollsPageController extends \PageController{
         if(!isset($data['PollID']) || !isset($data['MemberID'])){
             return $this->redirectBack();
         }
+        $poll = Poll::get()->byID($data['PollID']);
         $submission = PollSubmission::create();
+        if($poll->MultipleChoice){
+            $submission->Options()->addMany($data['PollOptions' . $data['PollID']]);
+        } else {
+            $submission->OptionID = $data['PollOptions' . $data['PollID']];
+        }
         $submission->PollID = $data['PollID'];
         $submission->MemberID = $data['MemberID'];
-        $submission->OptionID = $data['PollOptions' . $data['PollID']];
         $submission->write();
 
         return $this->redirectBack();

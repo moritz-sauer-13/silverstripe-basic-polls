@@ -5,7 +5,9 @@ namespace Polls\DataObjects;
 use DateTime;
 use Polls\Pages\PollsPage;
 use SilverStripe\Control\Controller;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\Debug;
+use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\DateField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\GridField\GridField;
@@ -14,6 +16,7 @@ use SilverStripe\Forms\GridField\GridFieldConfig;
 use SilverStripe\Forms\GridField\GridFieldConfig_Base;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\Forms\GridField\GridFieldDataColumns;
+use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
@@ -21,6 +24,7 @@ use SilverStripe\ORM\FieldType\DBDate;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\Security\Security;
 use SilverStripe\View\ArrayData;
+use SilverStripe\View\Requirements;
 use Symbiote\GridFieldExtensions\GridFieldAddNewInlineButton;
 use Symbiote\GridFieldExtensions\GridFieldEditableColumns;
 
@@ -32,7 +36,8 @@ class Poll extends DataObject{
         'StartDate' => 'Date',
         'EndDate' => 'Date',
         'Status' => "Enum('Active, Archived', 'Active')",
-        'SortOrder' => 'Int'
+        'SortOrder' => 'Int',
+        'MultipleChoice' => 'Boolean(0)'
     ];
 
     private static $has_one = [
@@ -65,6 +70,7 @@ class Poll extends DataObject{
             'SortOrder',
             'Options',
             'Submissions',
+            'MultipleChoice',
         ]);
 
         $fields->addFieldsToTab('Root.Main', [
@@ -72,6 +78,12 @@ class Poll extends DataObject{
             DateField::create('StartDate', _t(__CLASS__ . '.STARTDATE', 'Start Datum')),
             DateField::create('EndDate', _t(__CLASS__ . '.ENDDATE', 'End Datum')),
         ]);
+
+        if(Config::inst()->get(__CLASS__, 'MultipleChoiceAllowed')){
+            $fields->addFieldsToTab('Root.Main', [
+                CheckboxField::create('MultipleChoice', _t(__CLASS__ . '.MULTIPLECHOICE', 'Mehrfachauswahl')),
+            ]);
+        }
 
         /*OPTIONS*/
         $config = GridFieldConfig_RecordEditor::create();
@@ -87,23 +99,30 @@ class Poll extends DataObject{
         );
         $fields->addFieldToTab('Root.' . _t(__CLASS__ . '.POLLOPTIONS'), $optionsGridField);
 
-
         /*SUBMISSIONS*/
-        $submissionsConfig = GridFieldConfig_Base::create();
-        $dataColumns = new GridFieldDataColumns();
-        $dataColumns->setDisplayFields([
-            'Member.Name' => _t(__CLASS__ . '.SUBMITTEDBY'),
-            'Option.Title' => _t(__CLASS__ . '.CHOSENOPTION'),
-        ]);
+        if(Config::inst()->get(__CLASS__, 'AnonymousSubmissionsInBackend')){
+            // Chart Data
+            $chartData = $this->getChartData();
 
-        $submissionsGridField = GridField::create(
-            'Submissions',
-            _t(__CLASS__ . '.SUBMISSIONS'),
-            $this->Submissions(),
-            $submissionsConfig
-        );
+            // Template für das Balkendiagramm hinzufügen
+            $fields->addFieldToTab('Root.' . _t(__CLASS__ . '.SUBMISSIONS'), LiteralField::create('PollChart', $this->renderWith('PollChart', ['ChartData' => $chartData])));
+        } else {
+            $submissionsConfig = GridFieldConfig_Base::create();
+            $dataColumns = new GridFieldDataColumns();
+            $dataColumns->setDisplayFields([
+                'Member.Name' => _t(__CLASS__ . '.SUBMITTEDBY'),
+                'Option.Title' => _t(__CLASS__ . '.CHOSENOPTION'),
+            ]);
 
-        $fields->addFieldToTab('Root.' . _t(__CLASS__ . '.SUBMISSIONS'), $submissionsGridField);
+            $submissionsGridField = GridField::create(
+                'Submissions',
+                _t(__CLASS__ . '.SUBMISSIONS'),
+                $this->Submissions(),
+                $submissionsConfig
+            );
+
+            $fields->addFieldToTab('Root.' . _t(__CLASS__ . '.SUBMISSIONS'), $submissionsGridField);
+        }
 
         return $fields;
     }
@@ -173,7 +192,18 @@ class Poll extends DataObject{
 
         if ($TotalSubmissions > 0) {
             foreach ($this->Options() as $Option) {
-                $Count = $this->Submissions()->filter('OptionID', $Option->ID)->count();
+                if($this->MultipleChoice){
+                    $Count = 0;
+                    foreach ($this->Submissions() as $Submission) {
+                        foreach ($Submission->Options() as $SelectedOption) {
+                            if ($SelectedOption->ID == $Option->ID) {
+                                $Count++;
+                            }
+                        }
+                    }
+                } else {
+                    $Count = $this->Submissions()->filter('OptionID', $Option->ID)->count();
+                }
                 $Percentage = ($Count / $TotalSubmissions) * 100;
 
                 $Results->push([
@@ -198,6 +228,25 @@ class Poll extends DataObject{
         $endDate->setValue($this->EndDate);
 
         return $endDate->TimeDiff();
+    }
+
+    public function getChartData()
+    {
+        $results = $this->PollResults();
+        if(!$results->exists()){
+            return null;
+        }
+        $data = [
+            'labels' => [],
+            'counts' => []
+        ];
+
+        foreach ($results as $result) {
+            $data['labels'][] = $result->Option;
+            $data['counts'][] = $result->Count;
+        }
+
+        return urlencode(json_encode($data));
     }
 
 }
