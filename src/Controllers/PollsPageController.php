@@ -42,7 +42,7 @@ class PollsPageController extends \PageController{
             FormAction::create('submitPoll', 'Abstimmen')
         ]);
 
-        $required = RequiredFields::create('PollOptions');
+        $required = RequiredFields::create('PollOptions' . $PollID);
 
         $form = Form::create($this, 'PollForm', $fields, $actions, $required);
         $form->setHTMLID('PollForm'.$PollID);
